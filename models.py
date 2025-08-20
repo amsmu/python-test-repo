@@ -16,18 +16,15 @@ class User(UserMixin, db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # SECURITY ISSUE: Sensitive fields that could be mass-assigned
     api_key = db.Column(db.String(255))
     ssn = db.Column(db.String(11))
     credit_card = db.Column(db.String(16))
     bank_account = db.Column(db.String(20))
     
     def __init__(self, **kwargs):
-        # SECURITY ISSUE: No validation of input data
         super().__init__(**kwargs)
     
     def to_dict(self):
-        # SECURITY ISSUE: Exposing sensitive information
         return {
             'id': self.id,
             'username': self.username,
@@ -50,11 +47,9 @@ class Document(db.Model):
     is_public = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # SECURITY ISSUE: No file type validation
     file_type = db.Column(db.String(50))
     
     def __init__(self, **kwargs):
-        # SECURITY ISSUE: No input sanitization
         super().__init__(**kwargs)
 
 class AuditLog(db.Model):
@@ -67,11 +62,9 @@ class AuditLog(db.Model):
     ip_address = db.Column(db.String(45))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # SECURITY ISSUE: Storing raw user input without sanitization
     user_agent = db.Column(db.Text)
     
     def __init__(self, **kwargs):
-        # SECURITY ISSUE: No input validation
         super().__init__(**kwargs)
 
 class Payment(db.Model):
@@ -82,7 +75,6 @@ class Payment(db.Model):
     amount = db.Column(db.Numeric(10, 2))
     currency = db.Column(db.String(3), default='USD')
     
-    # SECURITY ISSUE: Storing sensitive payment information
     credit_card_number = db.Column(db.String(16))
     cvv = db.Column(db.String(4))
     expiry_date = db.Column(db.String(5))
@@ -90,7 +82,6 @@ class Payment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
-        # SECURITY ISSUE: Exposing sensitive payment data
         return {
             'id': self.id,
             'user_id': self.user_id,

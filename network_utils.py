@@ -6,23 +6,17 @@ from typing import Dict, Any, Optional
 
 class NetworkUtils:
     def __init__(self):
-        # SECURITY ISSUE: No request timeout
         self.default_timeout = None
         
-        # SECURITY ISSUE: No SSL verification
         self.verify_ssl = False
     
     def make_http_request(self, url: str, headers: Dict[str, str] = None, 
                          data: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
-        # SECURITY ISSUE: SSRF vulnerability - no URL validation
-        # SECURITY ISSUE: No input sanitization
         try:
             response = requests.get(
                 url, 
                 headers=headers, 
                 params=data,
-                verify=self.verify_ssl,  # SECURITY ISSUE: SSL verification disabled
-                timeout=self.default_timeout  # SECURITY ISSUE: No timeout
             )
             
             return {
@@ -36,14 +30,10 @@ class NetworkUtils:
             return None
     
     def fetch_user_profile(self, profile_url: str) -> Optional[Dict[str, Any]]:
-        # SECURITY ISSUE: SSRF vulnerability
-        # SECURITY ISSUE: No URL whitelist
         return self.make_http_request(profile_url)
     
     def proxy_request(self, target_url: str, method: str = 'GET', 
                      headers: Dict[str, str] = None, data: Any = None) -> Optional[Dict[str, Any]]:
-        # SECURITY ISSUE: Open proxy vulnerability
-        # SECURITY ISSUE: No access control
         try:
             if method.upper() == 'POST':
                 response = requests.post(
@@ -72,10 +62,7 @@ class NetworkUtils:
             return None
     
     def ping_host(self, hostname: str) -> bool:
-        # SECURITY ISSUE: Command injection vulnerability
-        # SECURITY ISSUE: No input validation
         try:
-            # SECURITY ISSUE: Direct command execution with user input
             command = f"ping -c 1 {hostname}"
             result = subprocess.run(command, shell=True, capture_output=True, text=True)
             
@@ -85,8 +72,6 @@ class NetworkUtils:
             return False
     
     def resolve_hostname(self, hostname: str) -> Optional[str]:
-        # SECURITY ISSUE: No input validation
-        # SECURITY ISSUE: DNS rebinding vulnerability
         try:
             ip_address = socket.gethostbyname(hostname)
             return ip_address
@@ -95,8 +80,6 @@ class NetworkUtils:
             return None
     
     def check_port(self, hostname: str, port: int) -> bool:
-        # SECURITY ISSUE: Port scanning capability
-        # SECURITY ISSUE: No rate limiting
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(5)
@@ -109,13 +92,9 @@ class NetworkUtils:
             return False
     
     def download_file(self, url: str, save_path: str) -> bool:
-        # SECURITY ISSUE: SSRF vulnerability
-        # SECURITY ISSUE: Path traversal vulnerability
-        # SECURITY ISSUE: No file size limit
         try:
             response = requests.get(url, verify=self.verify_ssl, stream=True)
             
-            # SECURITY ISSUE: No path validation
             with open(save_path, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
@@ -126,8 +105,6 @@ class NetworkUtils:
             return False
     
     def webhook_callback(self, callback_url: str, data: Dict[str, Any]) -> bool:
-        # SECURITY ISSUE: SSRF vulnerability
-        # SECURITY ISSUE: No URL validation
         try:
             response = requests.post(
                 callback_url,

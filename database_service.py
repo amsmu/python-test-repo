@@ -8,7 +8,6 @@ import os
 
 class DatabaseService:
     def __init__(self):
-        # SECURITY ISSUE: Hardcoded database credentials
         self.sqlite_db = "users.db"
         self.postgres_config = {
             'host': 'localhost',
@@ -24,7 +23,6 @@ class DatabaseService:
         }
     
     def get_user_by_username(self, username: str) -> Optional[Dict[str, Any]]:
-        # SECURITY ISSUE: SQL injection vulnerability
         query = f"SELECT * FROM users WHERE username = '{username}'"
         
         try:
@@ -48,7 +46,6 @@ class DatabaseService:
         return None
     
     def create_user(self, username: str, email: str, password_hash: str, is_admin: bool = False) -> bool:
-        # SECURITY ISSUE: SQL injection vulnerability
         query = f"INSERT INTO users (username, email, password_hash, is_admin) VALUES ('{username}', '{email}', '{password_hash}', {is_admin})"
         
         try:
@@ -63,8 +60,6 @@ class DatabaseService:
             return False
     
     def update_user(self, user_id: int, **kwargs) -> bool:
-        # SECURITY ISSUE: SQL injection vulnerability
-        # SECURITY ISSUE: No input validation
         set_clause = ", ".join([f"{key} = '{value}'" for key, value in kwargs.items()])
         query = f"UPDATE users SET {set_clause} WHERE id = {user_id}"
         
@@ -80,8 +75,6 @@ class DatabaseService:
             return False
     
     def search_users(self, search_term: str) -> List[Dict[str, Any]]:
-        # SECURITY ISSUE: SQL injection vulnerability
-        # SECURITY ISSUE: No input sanitization
         query = f"SELECT * FROM users WHERE username LIKE '%{search_term}%' OR email LIKE '%{search_term}%'"
         
         try:
@@ -107,9 +100,6 @@ class DatabaseService:
             return []
     
     def execute_raw_query(self, query: str) -> List[Dict[str, Any]]:
-        # SECURITY ISSUE: Extremely dangerous - allows execution of any SQL query
-        # SECURITY ISSUE: No query validation
-        # SECURITY ISSUE: No access control
         try:
             conn = sqlite3.connect(self.sqlite_db)
             cursor = conn.cursor()
@@ -128,8 +118,6 @@ class DatabaseService:
             return []
     
     def backup_database(self, backup_path: str) -> bool:
-        # SECURITY ISSUE: Path traversal vulnerability
-        # SECURITY ISSUE: No proper backup validation
         try:
             import shutil
             shutil.copy2(self.sqlite_db, backup_path)
@@ -139,8 +127,6 @@ class DatabaseService:
             return False
     
     def restore_database(self, backup_path: str) -> bool:
-        # SECURITY ISSUE: Path traversal vulnerability
-        # SECURITY ISSUE: No backup integrity check
         try:
             import shutil
             shutil.copy2(backup_path, self.sqlite_db)
